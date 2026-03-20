@@ -49,6 +49,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* GrappelAction;
+
 public:
 
 	/** Constructor */
@@ -67,6 +70,8 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
+	void Grappel(const FInputActionValue& Value);
+
 public:
 
 	/** Handles move inputs from either controls or UI interfaces */
@@ -84,6 +89,9 @@ public:
 	/** Handles jump pressed inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoGrappel(float upForce = 50.0f, float forwardForce = 50.0f);
 
 public:
 

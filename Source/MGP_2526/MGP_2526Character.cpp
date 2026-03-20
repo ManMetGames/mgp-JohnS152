@@ -65,6 +65,9 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Look);
+
+		//Grappel
+		EnhancedInputComponent->BindAction(GrappelAction, ETriggerEvent::Started, this, &AMGP_2526Character::Grappel);
 	}
 	else
 	{
@@ -88,6 +91,11 @@ void AMGP_2526Character::Look(const FInputActionValue& Value)
 
 	// route the input
 	DoLook(LookAxisVector.X, LookAxisVector.Y);
+}
+
+void AMGP_2526Character::Grappel(const FInputActionValue& Value)
+{
+	DoGrappel();
 }
 
 void AMGP_2526Character::DoMove(float Right, float Forward)
@@ -131,3 +139,10 @@ void AMGP_2526Character::DoJumpEnd()
 	// signal the character to stop jumping
 	StopJumping();
 }
+
+void AMGP_2526Character::DoGrappel(float upForce, float forwardForce)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grappel Binding Pressed"));
+}
+
+
