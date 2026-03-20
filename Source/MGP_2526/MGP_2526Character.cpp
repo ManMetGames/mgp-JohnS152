@@ -140,18 +140,16 @@ void AMGP_2526Character::DoJumpEnd()
 	StopJumping();
 }
 
-void AMGP_2526Character::DoGrappel(float upForce, float forwardForce)
+void AMGP_2526Character::DoGrappel(float upwardPush, float forwardPush)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grappel Binding Pressed"));
 
-	/*
-	I'm putting it in comments for now as a reference as I need to take a break and return later, will change.
 	FVector Direction = FollowCamera->GetForwardVector();
 
-	FVector LaunchVelocity = Direction * forwardForce;
-	LaunchVelocity.Z += upForce;
+	FVector LaunchVelocity = Direction * forwardPush;
+	LaunchVelocity.Z += upwardPush;
 
-	LaunchCharacter(LaunchVelocity, true, true);*/
+	LaunchCharacter(LaunchVelocity, true, true);
 }
 
 

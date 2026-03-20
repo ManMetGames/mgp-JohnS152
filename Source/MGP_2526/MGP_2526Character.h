@@ -52,6 +52,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* GrappelAction;
 
+
 public:
 
 	/** Constructor */
@@ -74,6 +75,12 @@ protected:
 
 public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	float GrappelUpwardsPush;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	float GrappelForwardsPush;
+	
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(float Right, float Forward);
@@ -91,7 +98,7 @@ public:
 	virtual void DoJumpEnd();
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
-	virtual void DoGrappel(float upForce = 50.0f, float forwardForce = 50.0f);
+	virtual void DoGrappel(float forwardPush, float upwardPush);
 
 public:
 
