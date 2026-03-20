@@ -80,6 +80,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	float GrappelForwardsPush;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	FVector LaunchVelocity;
 	
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")

@@ -95,7 +95,7 @@ void AMGP_2526Character::Look(const FInputActionValue& Value)
 
 void AMGP_2526Character::Grappel(const FInputActionValue& Value)
 {
-	DoGrappel();
+	DoGrappel(GrappelUpwardsPush, GrappelForwardsPush);
 }
 
 void AMGP_2526Character::DoMove(float Right, float Forward)
@@ -142,11 +142,13 @@ void AMGP_2526Character::DoJumpEnd()
 
 void AMGP_2526Character::DoGrappel(float upwardPush, float forwardPush)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Grappel Binding Pressed"));
+	/*This does not work as intended, recieve feedback for this.
+	The intended effect is that, regardless of how far up or down you look, you should be sent in the direction you are looking, with a fixed force.
+	I am too unfamiliar with Unreal's syntax to properly figure it out without a lot of issues, so I'm saving it for later.
+	*/
+	FVector direction = FollowCamera->GetForwardVector();
 
-	FVector Direction = FollowCamera->GetForwardVector();
-
-	FVector LaunchVelocity = Direction * forwardPush;
+	LaunchVelocity = direction * forwardPush;
 	LaunchVelocity.Z += upwardPush;
 
 	LaunchCharacter(LaunchVelocity, true, true);
