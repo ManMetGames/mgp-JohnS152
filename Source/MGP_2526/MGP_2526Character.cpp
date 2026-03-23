@@ -148,6 +148,10 @@ void AMGP_2526Character::DoGrappel(float upwardPush, float forwardPush)
 	*/
 	FVector direction = FollowCamera->GetForwardVector();
 
+	direction.Z = 0;
+
+	direction.Normalize();
+
 	LaunchVelocity = direction * forwardPush;
 	LaunchVelocity.Z += upwardPush;
 
