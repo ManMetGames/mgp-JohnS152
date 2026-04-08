@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "MGP_2526.h"
+#include "DrawDebugHelpers.h"
 
 AMGP_2526Character::AMGP_2526Character()
 {
@@ -40,6 +41,8 @@ AMGP_2526Character::AMGP_2526Character()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 400.0f;
 	CameraBoom->bUsePawnControlRotation = true;
+	//Camera offset. It looks strange to have a third person camera being blocked by the player model.
+	CameraBoom->SocketOffset = FVector(0.0f, 0.0f, 120.0f);
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -95,7 +98,7 @@ void AMGP_2526Character::Look(const FInputActionValue& Value)
 
 void AMGP_2526Character::Grappel(const FInputActionValue& Value)
 {
-	DoGrappel(GrappelUpwardsPush, GrappelForwardsPush);
+	DoGrappel(grappelUpwardsPush, grappelForwardsPush);
 }
 
 void AMGP_2526Character::DoMove(float Right, float Forward)
@@ -142,20 +145,68 @@ void AMGP_2526Character::DoJumpEnd()
 
 void AMGP_2526Character::DoGrappel(float upwardPush, float forwardPush)
 {
-	/*This does not work as intended, recieve feedback for this.
-	The intended effect is that, regardless of how far up or down you look, you should be sent in the direction you are looking, with a fixed force.
-	I am too unfamiliar with Unreal's syntax to properly figure it out without a lot of issues, so I'm saving it for later.
-	*/
 	FVector direction = FollowCamera->GetForwardVector();
 
 	direction.Z = 0;
-
 	direction.Normalize();
 
-	LaunchVelocity = direction * forwardPush;
-	LaunchVelocity.Z += upwardPush;
+	launchVelocity = direction * forwardPush;
+	launchVelocity.Z += upwardPush;
 
-	LaunchCharacter(LaunchVelocity, true, true);
+	if (canGrappel) 
+	{
+		LaunchCharacter(launchVelocity, true, true);
+	}	
 }
 
+void AMGP_2526Character::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	//A ray, cast every frame, to update the canGrappel bool. I'm doing it this way, rather than checking every time you do the grappel action, because I want to be able to have a ui element use it.
+	castRay();
+
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, canGrappel ? TEXT("Hitting") : TEXT("Not Hitting"));
+	
+}
+
+void AMGP_2526Character::castRay(float horizontalOffset, float verticleOffset)
+{
+	if (FollowCamera != nullptr) 
+	{
+		//Create start and end points for the ray, giving it the correct rotation.
+		FVector rayStart = FollowCamera->GetComponentLocation();
+		FRotator forwardRot = FollowCamera->GetComponentRotation();
+		FRotator offset(verticleOffset, horizontalOffset, 0);
+		FVector direction = (forwardRot + offset).Vector();
+		FVector rayEnd = rayStart + (direction * 3000.0f);
+
+		FHitResult hit;
+
+		FCollisionQueryParams params;
+		params.AddIgnoredActor(this);
+
+
+		bool isHit = GetWorld()->LineTraceSingleByChannel(
+			hit,
+			rayStart,
+			rayEnd,
+			ECC_Visibility,
+			params
+		);
+
+		canGrappel = isHit;
+
+		DrawDebugLine(
+			GetWorld(),
+			rayStart,
+			rayEnd,
+			FColor(0,255,0,60),
+			false,
+			1,
+			0,
+			1
+		);
+	}
+}
 

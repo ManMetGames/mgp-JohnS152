@@ -53,6 +53,7 @@ protected:
 	UInputAction* GrappelAction;
 
 
+
 public:
 
 	/** Constructor */
@@ -76,13 +77,16 @@ protected:
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
-	float GrappelUpwardsPush;
+	float grappelUpwardsPush;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
-	float GrappelForwardsPush;
+	float grappelForwardsPush;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	FVector LaunchVelocity;
+	FVector launchVelocity;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	bool canGrappel;
 	
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
@@ -102,6 +106,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void DoGrappel(float forwardPush, float upwardPush);
+	
+	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void castRay(float horizontalOffset = 0.0f, float verticleOffset = 0.0f);
 
 public:
 
