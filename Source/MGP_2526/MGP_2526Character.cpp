@@ -163,10 +163,25 @@ void AMGP_2526Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	canGrappel = false;
+	
 	//A ray, cast every frame, to update the canGrappel bool. I'm doing it this way, rather than checking every time you do the grappel action, because I want to be able to have a ui element use it.
 	castRay();
+	for (int i = 1; i < 3; i++)
+	{
+		float offset = 5.0f;
 
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, canGrappel ? TEXT("Hitting") : TEXT("Not Hitting"));
+		if (i % 2 == 0)
+		{
+			castRay(offset, 0);
+			castRay(0, offset);
+		}
+		else
+		{
+			castRay(-offset, 0);
+			castRay(0, -offset);
+		}
+	}
 	
 }
 
@@ -195,7 +210,11 @@ void AMGP_2526Character::castRay(float horizontalOffset, float verticleOffset)
 			params
 		);
 
-		canGrappel = isHit;
+		if (isHit)
+		{
+			canGrappel = isHit;
+		}
+		
 
 		DrawDebugLine(
 			GetWorld(),
