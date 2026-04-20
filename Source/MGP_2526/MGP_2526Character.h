@@ -87,6 +87,15 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	bool canGrappel;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Input")
+	int maxGrappel = 3;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Input")
+	int grappelCount = maxGrappel;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Input")
+	bool hasReset;
 	
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")

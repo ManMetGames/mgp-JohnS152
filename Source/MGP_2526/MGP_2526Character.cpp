@@ -153,9 +153,10 @@ void AMGP_2526Character::DoGrappel(float upwardPush, float forwardPush)
 	launchVelocity = direction * forwardPush;
 	launchVelocity.Z += upwardPush;
 
-	if (canGrappel) 
+	if (canGrappel && grappelCount > 0) 
 	{
 		LaunchCharacter(launchVelocity, true, true);
+		grappelCount--;
 	}	
 }
 
@@ -164,23 +165,23 @@ void AMGP_2526Character::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	canGrappel = false;
+	float offset = 5.0f;
 	
 	//A ray, cast every frame, to update the canGrappel bool. I'm doing it this way, rather than checking every time you do the grappel action, because I want to be able to have a ui element use it.
 	castRay();
-	for (int i = 1; i < 3; i++)
-	{
-		float offset = 5.0f;
+	castRay(-offset, 0);
+	castRay(0, -offset);
+	castRay(offset, 0);
+	castRay(0, offset);
 
-		if (i % 2 == 0)
-		{
-			castRay(offset, 0);
-			castRay(0, offset);
-		}
-		else
-		{
-			castRay(-offset, 0);
-			castRay(0, -offset);
-		}
+	if (GetCharacterMovement()->IsMovingOnGround() && hasReset == false)
+	{
+		grappelCount = maxGrappel;
+		hasReset = true;
+	}
+	if (GetCharacterMovement()->IsFalling())
+	{
+		hasReset = false;
 	}
 	
 }
