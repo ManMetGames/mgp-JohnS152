@@ -13,6 +13,8 @@
 #include "MGP_2526.h"
 #include "DrawDebugHelpers.h"
 
+#define COLLISION_GRAPPLE ECC_GameTraceChannel2
+
 AMGP_2526Character::AMGP_2526Character()
 {
 	// Set size for collision capsule
@@ -207,7 +209,7 @@ void AMGP_2526Character::castRay(float horizontalOffset, float verticleOffset)
 			hit,
 			rayStart,
 			rayEnd,
-			ECC_Visibility,
+			COLLISION_GRAPPLE,
 			params
 		);
 
