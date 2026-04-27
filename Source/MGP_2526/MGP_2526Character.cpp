@@ -175,6 +175,10 @@ void AMGP_2526Character::Tick(float DeltaTime)
 	castRay(0, -offset);
 	castRay(offset, 0);
 	castRay(0, offset);
+	castRay((offset * 0.75), (offset * 0.75));
+	castRay(-(offset * 0.75), -(offset * 0.75));
+	castRay((offset * 0.75), -(offset * 0.75));
+	castRay(-(offset * 0.75), (offset * 0.75));
 
 	if (GetCharacterMovement()->IsMovingOnGround() && hasReset == false)
 	{
@@ -186,6 +190,24 @@ void AMGP_2526Character::Tick(float DeltaTime)
 		hasReset = false;
 	}
 	
+}
+
+void AMGP_2526Character::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Warning, TEXT("Hello from cannon"));
+	// do we have a valid hud 
+	if (HUDType)
+	{
+		// create our hud
+		HUD = CreateWidget<UUserWidget>(GetWorld(), HUDType);
+		// if we successfuly created the widget
+		if (HUD)
+		{
+			HUD->AddToViewport();
+		}
+	}
 }
 
 void AMGP_2526Character::castRay(float horizontalOffset, float verticleOffset)
@@ -219,7 +241,7 @@ void AMGP_2526Character::castRay(float horizontalOffset, float verticleOffset)
 		}
 		
 
-		DrawDebugLine(
+		/*DrawDebugLine(
 			GetWorld(),
 			rayStart,
 			rayEnd,
@@ -228,7 +250,7 @@ void AMGP_2526Character::castRay(float horizontalOffset, float verticleOffset)
 			1,
 			0,
 			1
-		);
+		);*/
 	}
 }
 
