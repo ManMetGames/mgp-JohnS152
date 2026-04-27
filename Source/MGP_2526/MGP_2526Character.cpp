@@ -11,6 +11,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "MGP_2526.h"
+#include "DrawDebugHelpers.h"
+
+#define COLLISION_GRAPPLE ECC_GameTraceChannel2
 
 AMGP_2526Character::AMGP_2526Character()
 {
@@ -40,6 +43,8 @@ AMGP_2526Character::AMGP_2526Character()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 400.0f;
 	CameraBoom->bUsePawnControlRotation = true;
+	//Camera offset. It looks strange to have a third person camera being blocked by the player model.
+	CameraBoom->SocketOffset = FVector(0.0f, 0.0f, 120.0f);
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -65,6 +70,9 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Look);
+
+		//Grappel
+		EnhancedInputComponent->BindAction(GrappelAction, ETriggerEvent::Started, this, &AMGP_2526Character::Grappel);
 	}
 	else
 	{
@@ -88,6 +96,11 @@ void AMGP_2526Character::Look(const FInputActionValue& Value)
 
 	// route the input
 	DoLook(LookAxisVector.X, LookAxisVector.Y);
+}
+
+void AMGP_2526Character::Grappel(const FInputActionValue& Value)
+{
+	DoGrappel(grappelUpwardsPush, grappelForwardsPush);
 }
 
 void AMGP_2526Character::DoMove(float Right, float Forward)
@@ -131,3 +144,113 @@ void AMGP_2526Character::DoJumpEnd()
 	// signal the character to stop jumping
 	StopJumping();
 }
+
+void AMGP_2526Character::DoGrappel(float upwardPush, float forwardPush)
+{
+	FVector direction = FollowCamera->GetForwardVector();
+
+	direction.Z = 0;
+	direction.Normalize();
+
+	launchVelocity = direction * forwardPush;
+	launchVelocity.Z += upwardPush;
+
+	if (canGrappel && grappelCount > 0) 
+	{
+		LaunchCharacter(launchVelocity, true, true);
+		grappelCount--;
+	}	
+}
+
+void AMGP_2526Character::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	canGrappel = false;
+	float offset = 5.0f;
+	
+	//A ray, cast every frame, to update the canGrappel bool. I'm doing it this way, rather than checking every time you do the grappel action, because I want to be able to have a ui element use it.
+	castRay();
+	castRay(-offset, 0);
+	castRay(0, -offset);
+	castRay(offset, 0);
+	castRay(0, offset);
+	castRay((offset * 0.75), (offset * 0.75));
+	castRay(-(offset * 0.75), -(offset * 0.75));
+	castRay((offset * 0.75), -(offset * 0.75));
+	castRay(-(offset * 0.75), (offset * 0.75));
+
+	if (GetCharacterMovement()->IsMovingOnGround() && hasReset == false)
+	{
+		grappelCount = maxGrappel;
+		hasReset = true;
+	}
+	if (GetCharacterMovement()->IsFalling())
+	{
+		hasReset = false;
+	}
+	
+}
+
+void AMGP_2526Character::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Warning, TEXT("Hello from cannon"));
+	// do we have a valid hud 
+	if (HUDType)
+	{
+		// create our hud
+		HUD = CreateWidget<UUserWidget>(GetWorld(), HUDType);
+		// if we successfuly created the widget
+		if (HUD)
+		{
+			HUD->AddToViewport();
+		}
+	}
+}
+
+void AMGP_2526Character::castRay(float horizontalOffset, float verticleOffset)
+{
+	if (FollowCamera != nullptr) 
+	{
+		//Create start and end points for the ray, giving it the correct rotation.
+		FVector rayStart = FollowCamera->GetComponentLocation();
+		FRotator forwardRot = FollowCamera->GetComponentRotation();
+		FRotator offset(verticleOffset, horizontalOffset, 0);
+		FVector direction = (forwardRot + offset).Vector();
+		FVector rayEnd = rayStart + (direction * 3000.0f);
+
+		FHitResult hit;
+
+		FCollisionQueryParams params;
+		params.AddIgnoredActor(this);
+
+
+		bool isHit = GetWorld()->LineTraceSingleByChannel(
+			hit,
+			rayStart,
+			rayEnd,
+			COLLISION_GRAPPLE,
+			params
+		);
+
+		if (isHit)
+		{
+			canGrappel = isHit;
+		}
+		
+
+		/*DrawDebugLine(
+			GetWorld(),
+			rayStart,
+			rayEnd,
+			FColor(0,255,0,60),
+			false,
+			1,
+			0,
+			1
+		);*/
+	}
+}
+

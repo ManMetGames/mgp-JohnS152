@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "Blueprint/UserWidget.h"
 #include "MGP_2526Character.generated.h"
 
 class USpringArmComponent;
@@ -49,6 +50,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* GrappelAction;
+
+
+
 public:
 
 	/** Constructor */
@@ -67,8 +73,31 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
+	void Grappel(const FInputActionValue& Value);
+
 public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	float grappelUpwardsPush;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	float grappelForwardsPush;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	FVector launchVelocity;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Input")
+	bool canGrappel;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Input")
+	int maxGrappel = 3;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Input")
+	int grappelCount = maxGrappel;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Input")
+	bool hasReset;
+	
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(float Right, float Forward);
@@ -85,6 +114,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void DoGrappel(float forwardPush, float upwardPush);
+	
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void castRay(float horizontalOffset = 0.0f, float verticleOffset = 0.0f);
+
 public:
 
 	/** Returns CameraBoom subobject **/
@@ -92,5 +131,11 @@ public:
 
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD")
+	TSubclassOf<UUserWidget> HUDType;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HUD")
+	UUserWidget* HUD;
 };
 
