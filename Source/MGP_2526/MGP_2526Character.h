@@ -86,7 +86,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	FVector launchVelocity;
 
-	UPROPERTY(EditAnywhere, Category = "Input")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Input")
 	bool canGrappel;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Input")
