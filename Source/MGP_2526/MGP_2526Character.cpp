@@ -168,13 +168,12 @@ void AMGP_2526Character::Tick(float DeltaTime)
 
 	canGrappel = false;
 	//A ray, cast every frame, to update the canGrappel bool. I'm doing it this way, rather than checking every time you do the grappel action, because I want to be able to have a ui element use it.
-	castCone(5.0f);
+	castCone(4.0f);
 }
 
 void AMGP_2526Character::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
-
 	grappelCount = maxGrappel;
 }
 
