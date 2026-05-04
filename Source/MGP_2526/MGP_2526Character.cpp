@@ -167,9 +167,20 @@ void AMGP_2526Character::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	canGrappel = false;
-	float offset = 5.0f;
-	
 	//A ray, cast every frame, to update the canGrappel bool. I'm doing it this way, rather than checking every time you do the grappel action, because I want to be able to have a ui element use it.
+	castCone(5.0f);
+}
+
+void AMGP_2526Character::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	grappelCount = maxGrappel;
+}
+
+void AMGP_2526Character::castCone(float offset)
+{
+	//This ugly block of code is only because I could not find a clean way (like using a for loop or something) to give me the results I want. 
 	castRay();
 	castRay(-offset, 0);
 	castRay(0, -offset);
@@ -179,17 +190,6 @@ void AMGP_2526Character::Tick(float DeltaTime)
 	castRay(-(offset * 0.75), -(offset * 0.75));
 	castRay((offset * 0.75), -(offset * 0.75));
 	castRay(-(offset * 0.75), (offset * 0.75));
-
-	if (GetCharacterMovement()->IsMovingOnGround() && hasReset == false)
-	{
-		grappelCount = maxGrappel;
-		hasReset = true;
-	}
-	if (GetCharacterMovement()->IsFalling())
-	{
-		hasReset = false;
-	}
-	
 }
 
 void AMGP_2526Character::castRay(float horizontalOffset, float verticleOffset)
@@ -201,7 +201,7 @@ void AMGP_2526Character::castRay(float horizontalOffset, float verticleOffset)
 		FRotator forwardRot = FollowCamera->GetComponentRotation();
 		FRotator offset(verticleOffset, horizontalOffset, 0);
 		FVector direction = (forwardRot + offset).Vector();
-		FVector rayEnd = rayStart + (direction * 3000.0f);
+		FVector rayEnd = rayStart + (direction * 2500.0f);
 
 		FHitResult hit;
 

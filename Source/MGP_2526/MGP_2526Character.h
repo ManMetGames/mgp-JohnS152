@@ -95,9 +95,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Input")
 	int grappelCount = maxGrappel;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Input")
-	bool hasReset;
-	
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(float Right, float Forward);
@@ -119,10 +116,13 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void BeginPlay() override;
+	virtual void Landed(const FHitResult& Hit) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void castRay(float horizontalOffset = 0.0f, float verticleOffset = 0.0f);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	virtual void castCone(float offset);
 
 public:
 
