@@ -192,24 +192,6 @@ void AMGP_2526Character::Tick(float DeltaTime)
 	
 }
 
-void AMGP_2526Character::BeginPlay()
-{
-	Super::BeginPlay();
-
-	UE_LOG(LogTemp, Warning, TEXT("Hello from cannon"));
-	// do we have a valid hud 
-	if (HUDType)
-	{
-		// create our hud
-		HUD = CreateWidget<UUserWidget>(GetWorld(), HUDType);
-		// if we successfuly created the widget
-		if (HUD)
-		{
-			HUD->AddToViewport();
-		}
-	}
-}
-
 void AMGP_2526Character::castRay(float horizontalOffset, float verticleOffset)
 {
 	if (FollowCamera != nullptr) 
@@ -239,18 +221,6 @@ void AMGP_2526Character::castRay(float horizontalOffset, float verticleOffset)
 		{
 			canGrappel = isHit;
 		}
-		
-
-		/*DrawDebugLine(
-			GetWorld(),
-			rayStart,
-			rayEnd,
-			FColor(0,255,0,60),
-			false,
-			1,
-			0,
-			1
-		);*/
 	}
 }
 
